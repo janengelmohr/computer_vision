@@ -34,7 +34,7 @@ int main( int argc, char** argv )
     if(img0.empty())
     {
         cout << "Couldn't open the image " << filename << ". Make sure fruits.jpg is in the same folder as the compiled program or "
-             "insert an image as a parameter. \n" << endl;
+             "append an image as parameter. \n" << endl;
         return 0;
     }
 
@@ -208,8 +208,6 @@ static void onTrackbar(int, void*) {
     pthread_join(t1, NULL);
     pthread_join(t2, NULL);
     }
-
     imshow("image", newImage);
-
 }
 }
