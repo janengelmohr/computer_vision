@@ -207,9 +207,9 @@ static void onTrackbar(int, void*) {
             //wait for the threads to finish
     pthread_join(t1, NULL);
     pthread_join(t2, NULL);
-    imshow("image", newImage);
     }
 
+    imshow("image", newImage);
 
 }
 }
