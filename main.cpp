@@ -125,12 +125,6 @@ static void onTrackbar(int, void*) {
     newImage=img.clone();
     //iterations for filtering
 
-   //split the image into two logical parts and calculate each part in a seperate thread
-   pthread_t t1=0;
-   pthread_t t2=0;
-   pthread_create(&t1, NULL, calculateUpperPart, NULL);
-   pthread_create(&t2, NULL, calculateLowerPart, NULL);
-
 
     for(int iterations=0; iterations<boxfilterIterations; iterations++) {
         //handle corners and edges seperately
@@ -203,10 +197,23 @@ static void onTrackbar(int, void*) {
                              +n(k+1,0,channel)
                              +n(k+1,1,channel))/6;
                     }
+
+                for (int x=1; x<img.rows; x++){
+                   for(int y=1; y<img.cols; y++) {
+                               //format: (rows,cols)
+                                   n(x,y,channel) =
+                                           (n(x,y,channel)
+                                            +n(x,y+1,channel)
+                                            +n(x,y-1,channel)
+                                            +n(x+1,y,channel)
+                                            +n(x+1,y+1,channel)
+                                            +n(x+1,y-1,channel)
+                                            +n(x-1,y,channel)
+                                            +n(x-1,y+1,channel)
+                                            +n(x-1,y-1,channel))/9;
+                                                               }
+                                                           }
             }
-            //wait for the threads to finish
-    pthread_join(t1, NULL);
-    pthread_join(t2, NULL);
     }
     imshow("image", newImage);
 }
