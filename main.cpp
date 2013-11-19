@@ -29,7 +29,7 @@ static void onTrackbar(int, void*);
 int main( int argc, char** argv )
 {
     //read the image
-    char* filename = argc >= 2 ? argv[1] : (char*)"fruits.jpg";
+    char* filename = argc >= 2 ? argv[1] : (char*)"derp.jpg";
     Mat img0 = imread(filename, -1);
     if(img0.empty())
     {
@@ -62,31 +62,7 @@ int main( int argc, char** argv )
     return 0;
 }
 
-//calculate lower part of the image
-void *calculateLowerPart(void *null) {
-    //handle any other pixel that is neither an edge nor a corner
-    for(int iterations=0; iterations<boxfilterIterations; iterations++) {
-            for(int channel=0; channel<3; channel++) {
 
-         for (int x=(int)floor(img.rows/2); x<img.rows; x++){
-            for(int y=1; y<img.cols; y++) {
-                        //format: (rows,cols)
-                            n(x,y,channel) =
-                                    (n(x,y,channel)
-                                     +n(x,y+1,channel)
-                                     +n(x,y-1,channel)
-                                     +n(x+1,y,channel)
-                                     +n(x+1,y+1,channel)
-                                     +n(x+1,y-1,channel)
-                                     +n(x-1,y,channel)
-                                     +n(x-1,y+1,channel)
-                                     +n(x-1,y-1,channel))/9;
-                                                    }
-                                            }
-            }
-    }
-    return 0;
-}
 
 //calculate upper part of the image
 void *calculateUpperPart(void *null) {
@@ -111,7 +87,7 @@ void *calculateUpperPart(void *null) {
                                                            }
             }
     }
-    return 0;
+    pthread_exit(NULL);
 }
 
 
@@ -127,9 +103,7 @@ static void onTrackbar(int, void*) {
 
    //split the image into two logical parts and calculate each part in a seperate thread
    pthread_t t1=0;
-   pthread_t t2=0;
    pthread_create(&t1, NULL, calculateUpperPart, NULL);
-   pthread_create(&t2, NULL, calculateLowerPart, NULL);
 
 
     for(int iterations=0; iterations<boxfilterIterations; iterations++) {
@@ -203,11 +177,29 @@ static void onTrackbar(int, void*) {
                              +n(k+1,0,channel)
                              +n(k+1,1,channel))/6;
                     }
+
+                //lower part
+                for (int x=(int)img.rows/2; x<img.rows; x++){
+                   for(int y=1; y<img.cols; y++) {
+                               //format: (rows,cols)
+                                   n(x,y,channel) =
+                                           (n(x,y,channel)
+                                            +n(x,y+1,channel)
+                                            +n(x,y-1,channel)
+                                            +n(x+1,y,channel)
+                                            +n(x+1,y+1,channel)
+                                            +n(x+1,y-1,channel)
+                                            +n(x-1,y,channel)
+                                            +n(x-1,y+1,channel)
+                                            +n(x-1,y-1,channel))/9;
+                                                           }
+                                                   }
             }
-            //wait for the threads to finish
-    pthread_join(t1, NULL);
-    pthread_join(t2, NULL);
     }
+
+
+    //wait for the threads to finish
+    pthread_join(t1, NULL);
 
     imshow("image", newImage);
 
